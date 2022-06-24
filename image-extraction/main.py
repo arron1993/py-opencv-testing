@@ -40,9 +40,10 @@ def find_bounding_boxes(contours):
 def save_subimages(original_image, boxes):
     i = 0
     for x, y, w, h in boxes:
-        cropped = original_image[y : y + h, x : x + w]
-        cv.imwrite(f"./results/ROI_{i}.jpg", cropped)
-        i += 1
+        if w > 100 and h > 100:
+            cropped = original_image[y : y + h, x : x + w]
+            cv.imwrite(f"./results/ROI_{i}.jpg", cropped)
+            i += 1
 
 
 def main():
@@ -53,8 +54,8 @@ def main():
     img = otsu_binarization(img)
     img = dilate(img)
     contours, hierarchy = find_contours(img)
-    boxes = find_bounding_boxes(original_image, contours)
-    save_subimages(boxes)
+    boxes = find_bounding_boxes(contours)
+    save_subimages(original_image, boxes)
 
 
 if __name__ == "__main__":
