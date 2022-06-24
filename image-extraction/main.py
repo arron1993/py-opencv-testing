@@ -37,21 +37,24 @@ def find_bounding_boxes(contours):
     return [cv.boundingRect(c) for c in contours]
 
 
-def main():
-    original_img = load_image()
+def save_subimages(original_image, boxes):
+    i = 0
+    for x, y, w, h in boxes:
+        cropped = original_image[y : y + h, x : x + w]
+        cv.imwrite(f"./results/ROI_{i}.jpg", cropped)
+        i += 1
 
-    img = grayscale(original_img)
+
+def main():
+    original_image = load_image()
+
+    img = grayscale(original_image)
     img = gaussian_blur(img)
     img = otsu_binarization(img)
     img = dilate(img)
     contours, hierarchy = find_contours(img)
-    boxes = find_bounding_boxes(contours)
-    i = 0
-    for x, y, w, h in boxes:
-        cropped = original_img[y : y + h, x : x + w]
-        cv.imwrite(f"./results/ROI_{i}.jpg", cropped)
-        i += 1
-    save(img)
+    boxes = find_bounding_boxes(original_image, contours)
+    save_subimages(boxes)
 
 
 if __name__ == "__main__":
